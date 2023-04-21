@@ -49,6 +49,10 @@ const Contact = ({
   selected: boolean;
   onClick: () => void;
 }) => {
+  const readableBirthday = new Date(contact.birthday).toLocaleDateString();
+  const createdAtDateObj = new Date(contact.birthday);
+  const readableCreatedAt = `${createdAtDateObj.toLocaleDateString()} ${createdAtDateObj.toLocaleTimeString()}`;
+
   return (
     <ContactContainer onClick={onClick}>
       <MainInfo>
@@ -59,8 +63,8 @@ const Contact = ({
         <OtherInfo>
           <div>Email: {contact.email}</div>
           <div>Phone: {contact.phone}</div>
-          <div>Birthday: {contact.birthday}</div>
-          <div>Created: {contact.createdAt}</div>
+          <div>Birthday: {readableBirthday}</div>
+          <div>Created: {readableCreatedAt}</div>
         </OtherInfo>
       ) : null}
     </ContactContainer>
