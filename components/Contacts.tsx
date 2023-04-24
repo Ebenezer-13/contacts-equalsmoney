@@ -11,7 +11,7 @@ const ContactList = ({ contacts }: { contacts: IContact[] }) => {
           key={contact.name}
           contact={contact}
           selected={idx === selectedIdx}
-          onClick={() => setSelectedIdx(idx)}
+          onClick={() => idx !== selectedIdx && setSelectedIdx(idx)}
         />
       ))}
     </>

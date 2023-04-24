@@ -1,5 +1,12 @@
 import styled, { css } from "styled-components";
 import { IContact } from "@/types";
+import {
+  deleteContact,
+  updateContact,
+} from "../pureFunctions/contactsApiHelpers";
+import { useState } from "react";
+import EditableField from "./EditableField";
+import { useRouter } from "next/router";
 
 const ContactContainer = styled.div`
   width: 100%;
@@ -40,6 +47,30 @@ const OtherInfo = styled.div`
   font-size: 10px;
 `;
 
+const ButtonsContainer = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 16px;
+`;
+
+interface IButton extends React.HTMLProps<HTMLButtonElement> {
+  buttonType: "delete" | "edit" | "save";
+  children: React.ReactNode;
+}
+
+const Button = styled.button<IButton>`
+  all: unset;
+  cursor: pointer;
+  padding: 8px;
+
+  &:focus {
+    outline: yellow 5px auto;
+  }
+  color: white;
+  background: ${({ buttonType }) =>
+    buttonType === "delete" ? "red" : "green"};
+`;
+
 const Contact = ({
   contact,
   selected,
@@ -49,6 +80,14 @@ const Contact = ({
   selected: boolean;
   onClick: () => void;
 }) => {
+  const [name, setName] = useState<string>(contact.name);
+  const [email, setEmail] = useState<string>(contact.email);
+  const [phone, setPhone] = useState<string>(contact.phone);
+
+  const [editing, setEditing] = useState<boolean>(false);
+
+  const router = useRouter();
+
   const readableBirthday = new Date(contact.birthday).toLocaleDateString();
   const createdAtDateObj = new Date(contact.birthday);
   const readableCreatedAt = `${createdAtDateObj.toLocaleDateString()} ${createdAtDateObj.toLocaleTimeString()}`;
@@ -57,15 +96,70 @@ const Contact = ({
     <ContactContainer onClick={onClick}>
       <MainInfo>
         <AvatarImage src={contact.avatar} />
-        <Name>{contact.name}</Name>
+        <Name>
+          <EditableField
+            value={name}
+            editing={editing}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </Name>
       </MainInfo>
       {selected ? (
-        <OtherInfo>
-          <div>Email: {contact.email}</div>
-          <div>Phone: {contact.phone}</div>
-          <div>Birthday: {readableBirthday}</div>
-          <div>Created: {readableCreatedAt}</div>
-        </OtherInfo>
+        <>
+          <OtherInfo>
+            <div>
+              Email:{" "}
+              <EditableField
+                value={email}
+                editing={editing}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              Phone:{" "}
+              <EditableField
+                value={phone}
+                editing={editing}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+            <div>Birthday: {readableBirthday}</div>
+            <div>Created: {readableCreatedAt}</div>
+          </OtherInfo>
+          <ButtonsContainer>
+            {editing ? (
+              <>
+                <Button
+                  buttonType="save"
+                  onClick={async () => {
+                    await updateContact({
+                      ...contact,
+                      name,
+                      email,
+                      phone,
+                    });
+                    router.reload();
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  buttonType="delete"
+                  onClick={async () => {
+                    await deleteContact(contact.id);
+                    router.reload();
+                  }}
+                >
+                  Delete
+                </Button>
+              </>
+            ) : (
+              <Button buttonType="edit" onClick={() => setEditing(true)}>
+                Edit
+              </Button>
+            )}
+          </ButtonsContainer>
+        </>
       ) : null}
     </ContactContainer>
   );

@@ -21,7 +21,7 @@ const Header = styled.div`
 `;
 
 const ContentContainer = styled.div`
-  max-width: 800px;
+  max-width: 480px;
 
   @media (max-width: 800px) {
     padding: 0 16px;
