@@ -75,16 +75,20 @@ const Contact = ({
   contact,
   selected,
   onClick,
+  editing,
+  onEditButtonClick,
 }: {
   contact: IContact;
   selected: boolean;
   onClick: () => void;
+  editing: boolean;
+  onEditButtonClick: () => void;
 }) => {
   const [name, setName] = useState<string>(contact.name);
   const [email, setEmail] = useState<string>(contact.email);
   const [phone, setPhone] = useState<string>(contact.phone);
 
-  const [editing, setEditing] = useState<boolean>(false);
+  // const [editing, setEditing] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -154,7 +158,7 @@ const Contact = ({
                 </Button>
               </>
             ) : (
-              <Button buttonType="edit" onClick={() => setEditing(true)}>
+              <Button buttonType="edit" onClick={onEditButtonClick}>
                 Edit
               </Button>
             )}
